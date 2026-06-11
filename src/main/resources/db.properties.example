@@ -1,0 +1,17 @@
+# Database connection configuration for PostgreSQL
+# Copy file này thành db.properties và điền thông tin thực tế của bạn
+# Copy this file to db.properties and fill in your actual credentials
+
+# --- Cấu hình kết nối CSDL Neon (Cloud) ---
+# db.url=jdbc:postgresql://<host>/neondb?sslmode=require
+# db.username=your_neon_username
+# db.password=your_neon_password
+
+# --- Cấu hình kết nối PostgreSQL cục bộ (Localhost) ---
+db.url=jdbc:postgresql://localhost:5432/quanlybanhang
+db.username=postgres
+db.password=YOUR_PASSWORD_HERE
+
+# --- Tài khoản Admin ngoài Database ---
+admin.username=admin
+admin.password=YOUR_ADMIN_PASSWORD_HERE
