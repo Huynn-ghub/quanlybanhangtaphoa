@@ -16,6 +16,7 @@ public class MainFrame extends JFrame {
     // Sidebar Buttons
     private JButton btnDashboard;
     private JButton btnPOS;
+    private JButton btnOrderHistory;
     private JButton btnProduct;
     private JButton btnCustomer;
     private JButton btnSupplier;
@@ -30,6 +31,7 @@ public class MainFrame extends JFrame {
     // Sub panels
     private DashboardPanel dashboardPanel;
     private SalesPanel salesPanel;
+    private OrderHistoryPanel orderHistoryPanel;
     private ProductPanel productPanel;
     private CustomerPanel customerPanel;
     private SupplierPanel supplierPanel;
@@ -81,19 +83,21 @@ public class MainFrame extends JFrame {
         // Sidebar Navigation Buttons
         JPanel sbMenu = new JPanel();
         sbMenu.setOpaque(false);
-        sbMenu.setLayout(new GridLayout(8, 1, 0, 8));
+        sbMenu.setLayout(new GridLayout(9, 1, 0, 8));
         sbMenu.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
 
-        btnDashboard = createSidebarButton("Trang Chủ / Báo Cáo", "/icons/dashboard.png");
-        btnPOS = createSidebarButton("Bán Hàng (POS)", "/icons/pos.png");
-        btnProduct = createSidebarButton("Quản Lý Sản Phẩm", "/icons/product.png");
-        btnCustomer = createSidebarButton("Quản Lý Khách Hàng", "/icons/customer.png");
-        btnSupplier = createSidebarButton("Quản Lý Nhà Cung Cấp", "/icons/supplier.png");
-        btnImport = createSidebarButton("Nhập Hàng Kho", "/icons/import.png");
-        btnUser = createSidebarButton("Quản Lý Nhân Viên", "/icons/user.png");
+        btnDashboard  = createSidebarButton("Trang Chủ / Báo Cáo", "/icons/dashboard.png");
+        btnPOS          = createSidebarButton("Bán Hàng (POS)", "/icons/pos.png");
+        btnOrderHistory = createSidebarButton("Lịch Sử Hóa Đơn", "/icons/dashboard.png");
+        btnProduct      = createSidebarButton("Quản Lý Sản Phẩm", "/icons/product.png");
+        btnCustomer     = createSidebarButton("Quản Lý Khách Hàng", "/icons/customer.png");
+        btnSupplier     = createSidebarButton("Quản Lý Nhà Cung Cấp", "/icons/supplier.png");
+        btnImport       = createSidebarButton("Nhập Hàng Kho", "/icons/import.png");
+        btnUser         = createSidebarButton("Quản Lý Nhân Viên", "/icons/user.png");
         
         sbMenu.add(btnDashboard);
         sbMenu.add(btnPOS);
+        sbMenu.add(btnOrderHistory);
         sbMenu.add(btnProduct);
         sbMenu.add(btnCustomer);
         sbMenu.add(btnSupplier);
@@ -147,21 +151,23 @@ public class MainFrame extends JFrame {
         contentPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
         // Khởi tạo các Sub-Panel View
-        dashboardPanel = new DashboardPanel();
-        salesPanel = new SalesPanel(currentUser);
-        productPanel = new ProductPanel();
-        customerPanel = new CustomerPanel();
-        supplierPanel = new SupplierPanel();
-        importPanel = new ImportPanel(currentUser);
-        userPanel = new UserPanel();
+        dashboardPanel    = new DashboardPanel();
+        salesPanel        = new SalesPanel(currentUser);
+        orderHistoryPanel = new OrderHistoryPanel();
+        productPanel      = new ProductPanel();
+        customerPanel     = new CustomerPanel();
+        supplierPanel     = new SupplierPanel();
+        importPanel       = new ImportPanel(currentUser);
+        userPanel         = new UserPanel();
 
         // Thêm vào card layout
-        contentPanel.add(dashboardPanel, "DASHBOARD");
-        contentPanel.add(salesPanel, "POS");
-        contentPanel.add(productPanel, "PRODUCT");
-        contentPanel.add(customerPanel, "CUSTOMER");
-        contentPanel.add(supplierPanel, "SUPPLIER");
-        contentPanel.add(importPanel, "IMPORT");
+        contentPanel.add(dashboardPanel,    "DASHBOARD");
+        contentPanel.add(salesPanel,        "POS");
+        contentPanel.add(orderHistoryPanel, "ORDER_HISTORY");
+        contentPanel.add(productPanel,      "PRODUCT");
+        contentPanel.add(customerPanel,     "CUSTOMER");
+        contentPanel.add(supplierPanel,     "SUPPLIER");
+        contentPanel.add(importPanel,       "IMPORT");
         if (currentUser.getRole().equals("ADMIN")) {
             contentPanel.add(userPanel, "USER");
         }
@@ -192,13 +198,14 @@ public class MainFrame extends JFrame {
         // Reset active colors cho sidebar buttons
         resetButtonColors();
         switch (cardName) {
-            case "DASHBOARD" -> setButtonActive(btnDashboard);
-            case "POS" -> setButtonActive(btnPOS);
-            case "PRODUCT" -> setButtonActive(btnProduct);
-            case "CUSTOMER" -> setButtonActive(btnCustomer);
-            case "SUPPLIER" -> setButtonActive(btnSupplier);
-            case "IMPORT" -> setButtonActive(btnImport);
-            case "USER" -> setButtonActive(btnUser);
+            case "DASHBOARD"     -> setButtonActive(btnDashboard);
+            case "POS"           -> setButtonActive(btnPOS);
+            case "ORDER_HISTORY" -> setButtonActive(btnOrderHistory);
+            case "PRODUCT"       -> setButtonActive(btnProduct);
+            case "CUSTOMER"      -> setButtonActive(btnCustomer);
+            case "SUPPLIER"      -> setButtonActive(btnSupplier);
+            case "IMPORT"        -> setButtonActive(btnImport);
+            case "USER"          -> setButtonActive(btnUser);
         }
     }
 
@@ -206,12 +213,13 @@ public class MainFrame extends JFrame {
         Color darkBlue = new Color(33, 47, 60);
         Color lightText = new Color(213, 219, 219);
         
-        btnDashboard.setBackground(darkBlue); btnDashboard.setForeground(lightText);
-        btnPOS.setBackground(darkBlue); btnPOS.setForeground(lightText);
-        btnProduct.setBackground(darkBlue); btnProduct.setForeground(lightText);
-        btnCustomer.setBackground(darkBlue); btnCustomer.setForeground(lightText);
-        btnSupplier.setBackground(darkBlue); btnSupplier.setForeground(lightText);
-        btnImport.setBackground(darkBlue); btnImport.setForeground(lightText);
+        btnDashboard.setBackground(darkBlue);    btnDashboard.setForeground(lightText);
+        btnPOS.setBackground(darkBlue);          btnPOS.setForeground(lightText);
+        btnOrderHistory.setBackground(darkBlue); btnOrderHistory.setForeground(lightText);
+        btnProduct.setBackground(darkBlue);      btnProduct.setForeground(lightText);
+        btnCustomer.setBackground(darkBlue);     btnCustomer.setForeground(lightText);
+        btnSupplier.setBackground(darkBlue);     btnSupplier.setForeground(lightText);
+        btnImport.setBackground(darkBlue);       btnImport.setForeground(lightText);
         if (btnUser != null) {
             btnUser.setBackground(darkBlue); btnUser.setForeground(lightText);
         }
@@ -224,22 +232,23 @@ public class MainFrame extends JFrame {
         }
     }
 
-    // Action Listener binding
-    public void addDashboardListener(ActionListener listener) { btnDashboard.addActionListener(listener); }
-    public void addPOSListener(ActionListener listener) { btnPOS.addActionListener(listener); }
-    public void addProductListener(ActionListener listener) { btnProduct.addActionListener(listener); }
-    public void addCustomerListener(ActionListener listener) { btnCustomer.addActionListener(listener); }
-    public void addSupplierListener(ActionListener listener) { btnSupplier.addActionListener(listener); }
-    public void addImportListener(ActionListener listener) { btnImport.addActionListener(listener); }
-    public void addUserListener(ActionListener listener) { if (btnUser != null) btnUser.addActionListener(listener); }
-    public void addLogoutListener(ActionListener listener) { btnLogout.addActionListener(listener); }
+    public void addDashboardListener(ActionListener listener)    { btnDashboard.addActionListener(listener); }
+    public void addPOSListener(ActionListener listener)          { btnPOS.addActionListener(listener); }
+    public void addOrderHistoryListener(ActionListener listener) { btnOrderHistory.addActionListener(listener); }
+    public void addProductListener(ActionListener listener)      { btnProduct.addActionListener(listener); }
+    public void addCustomerListener(ActionListener listener)     { btnCustomer.addActionListener(listener); }
+    public void addSupplierListener(ActionListener listener)     { btnSupplier.addActionListener(listener); }
+    public void addImportListener(ActionListener listener)       { btnImport.addActionListener(listener); }
+    public void addUserListener(ActionListener listener)         { if (btnUser != null) btnUser.addActionListener(listener); }
+    public void addLogoutListener(ActionListener listener)       { btnLogout.addActionListener(listener); }
 
     // Getters cho các Sub Panel để Controller quản lý
-    public DashboardPanel getDashboardPanel() { return dashboardPanel; }
-    public SalesPanel getSalesPanel() { return salesPanel; }
-    public ProductPanel getProductPanel() { return productPanel; }
-    public CustomerPanel getCustomerPanel() { return customerPanel; }
-    public SupplierPanel getSupplierPanel() { return supplierPanel; }
-    public ImportPanel getImportPanel() { return importPanel; }
-    public UserPanel getUserPanel() { return userPanel; }
+    public DashboardPanel    getDashboardPanel()    { return dashboardPanel; }
+    public SalesPanel        getSalesPanel()        { return salesPanel; }
+    public OrderHistoryPanel getOrderHistoryPanel() { return orderHistoryPanel; }
+    public ProductPanel      getProductPanel()      { return productPanel; }
+    public CustomerPanel     getCustomerPanel()     { return customerPanel; }
+    public SupplierPanel     getSupplierPanel()     { return supplierPanel; }
+    public ImportPanel       getImportPanel()       { return importPanel; }
+    public UserPanel         getUserPanel()         { return userPanel; }
 }
