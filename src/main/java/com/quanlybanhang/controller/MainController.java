@@ -25,6 +25,7 @@ public class MainController {
     private SupplierController supplierController;
     private ImportController importController;
     private UserController userController;
+    private OrderHistoryController orderHistoryController;
 
     public MainController(MainFrame view, User currentUser) {
         this.view = view;
@@ -35,26 +36,28 @@ public class MainController {
     }
 
     private void initSubControllers() {
-        dashboardController = new DashboardController(view.getDashboardPanel(), new OrderDAO(), new CustomerDAO(), new ProductDAO());
-        salesController = new SalesController(view.getSalesPanel(), new ProductDAO(), new CustomerDAO(), new OrderDAO(), currentUser);
-        productController = new ProductController(view.getProductPanel(), new ProductDAO(), new CategoryDAO());
-        customerController = new CustomerController(view.getCustomerPanel(), new CustomerDAO());
-        supplierController = new SupplierController(view.getSupplierPanel(), new SupplierDAO());
-        importController = new ImportController(view.getImportPanel(), new ProductDAO(), new SupplierDAO(), new ImportReceiptDAO(), currentUser);
-        
+        dashboardController     = new DashboardController(view.getDashboardPanel(), new OrderDAO(), new CustomerDAO(), new ProductDAO());
+        salesController         = new SalesController(view.getSalesPanel(), new ProductDAO(), new CustomerDAO(), new OrderDAO(), currentUser);
+        productController       = new ProductController(view.getProductPanel(), new ProductDAO(), new CategoryDAO());
+        customerController      = new CustomerController(view.getCustomerPanel(), new CustomerDAO());
+        supplierController      = new SupplierController(view.getSupplierPanel(), new SupplierDAO());
+        importController        = new ImportController(view.getImportPanel(), new ProductDAO(), new SupplierDAO(), new ImportReceiptDAO(), currentUser);
+        orderHistoryController  = new OrderHistoryController(view.getOrderHistoryPanel(), new OrderDAO());
+
         if (currentUser.getRole().equals("ADMIN")) {
             userController = new UserController(view.getUserPanel(), new UserDAO());
         }
     }
 
     private void initNavigation() {
-        view.addDashboardListener(e -> showPanel("DASHBOARD"));
-        view.addPOSListener(e -> showPanel("POS"));
-        view.addProductListener(e -> showPanel("PRODUCT"));
-        view.addCustomerListener(e -> showPanel("CUSTOMER"));
-        view.addSupplierListener(e -> showPanel("SUPPLIER"));
-        view.addImportListener(e -> showPanel("IMPORT"));
-        
+        view.addDashboardListener(e    -> showPanel("DASHBOARD"));
+        view.addPOSListener(e          -> showPanel("POS"));
+        view.addOrderHistoryListener(e -> showPanel("ORDER_HISTORY"));
+        view.addProductListener(e      -> showPanel("PRODUCT"));
+        view.addCustomerListener(e     -> showPanel("CUSTOMER"));
+        view.addSupplierListener(e     -> showPanel("SUPPLIER"));
+        view.addImportListener(e       -> showPanel("IMPORT"));
+
         if (currentUser.getRole().equals("ADMIN")) {
             view.addUserListener(e -> showPanel("USER"));
         }
@@ -72,15 +75,14 @@ public class MainController {
         view.switchPanel(cardName);
 
         switch (cardName) {
-            case "DASHBOARD" -> dashboardController.loadDashboardStats();
-            case "POS" -> salesController.refreshData();
-            case "PRODUCT" -> productController.loadData();
-            case "CUSTOMER" -> customerController.loadData();
-            case "SUPPLIER" -> supplierController.loadData();
-            case "IMPORT" -> importController.refreshData();
-            case "USER" -> {
-                if (userController != null) userController.loadData();
-            }
+            case "DASHBOARD"     -> dashboardController.loadDashboardStats();
+            case "POS"           -> salesController.refreshData();
+            case "ORDER_HISTORY" -> orderHistoryController.loadData();
+            case "PRODUCT"       -> productController.loadData();
+            case "CUSTOMER"      -> customerController.loadData();
+            case "SUPPLIER"      -> supplierController.loadData();
+            case "IMPORT"        -> importController.refreshData();
+            case "USER"          -> { if (userController != null) userController.loadData(); }
         }
     }
 
