@@ -7,6 +7,7 @@ import com.quanlybanhang.model.OrderDetail;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
 /**
  * DAO xử lý hóa đơn bán hàng.
@@ -209,6 +210,63 @@ public class OrderDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error fetching orders by date range: " + e.getMessage());
+        }
+        return list;
+    }
+
+    /**
+     * Tìm kiếm hóa đơn linh hoạt theo từ khóa và khoảng thời gian.
+     * keyword: khớp với mã HĐ, tên khách hàng, hoặc tên thu ngân (không phân biệt hoa/thường).
+     * from / to: nếu null thì bỏ qua điều kiện tương ứng.
+     */
+    public List<Order> searchOrders(String keyword, Timestamp from, Timestamp to) {
+        List<Order> list = new ArrayList<>();
+
+        StringBuilder sql = new StringBuilder(
+            "SELECT o.*, u.full_name AS user_name, c.name AS customer_name FROM orders o " +
+            "LEFT JOIN users u ON o.user_id = u.id " +
+            "LEFT JOIN customers c ON o.customer_id = c.id " +
+            "WHERE 1=1 "
+        );
+
+        List<Object> params = new ArrayList<>();
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append("AND (o.code ILIKE ? OR c.name ILIKE ? OR u.full_name ILIKE ?) ");
+            String kw = "%" + keyword.trim() + "%";
+            params.add(kw);
+            params.add(kw);
+            params.add(kw);
+        }
+
+        if (from != null) {
+            sql.append("AND o.order_date >= ? ");
+            params.add(from);
+        }
+
+        if (to != null) {
+            sql.append("AND o.order_date <= ? ");
+            params.add(to);
+        }
+
+        sql.append("ORDER BY o.order_date DESC");
+
+        try (Connection conn = DatabaseHelper.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+            for (int i = 0; i < params.size(); i++) {
+                Object p = params.get(i);
+                if (p instanceof String) ps.setString(i + 1, (String) p);
+                else if (p instanceof Timestamp) ps.setTimestamp(i + 1, (Timestamp) p);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapOrder(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error searching orders: " + e.getMessage());
         }
         return list;
     }
