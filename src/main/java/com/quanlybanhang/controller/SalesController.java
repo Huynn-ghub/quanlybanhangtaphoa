@@ -78,7 +78,7 @@ public class SalesController {
             public void mouseClicked(MouseEvent e) {
                 int row = view.getSelectedCartRow();
                 if (row != -1) {
-                    int qty = (int) view.getCartTableModel().getValueAt(row, 4);
+                    // TODO: có thể dùng row để chỉnh sửa số lượng trong giỏ hàng
                 }
             }
         });
