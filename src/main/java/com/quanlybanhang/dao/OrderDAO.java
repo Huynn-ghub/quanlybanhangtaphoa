@@ -271,6 +271,52 @@ public class OrderDAO {
         return list;
     }
 
+    /**
+     * Lấy thống kê hóa đơn trong ngày hôm nay: số lượng đơn và tổng doanh thu.
+     * Trả về mảng int[2]: [0] = số đơn, [1] sẽ được ép kiểu double bên ngoài.
+     * Dùng double[] để chứa cả hai giá trị: [0] = số đơn (int), [1] = doanh thu (double).
+     */
+    public double[] getTodayStats() {
+        String sql = "SELECT COUNT(id) AS ord_cnt, COALESCE(SUM(final_amount), 0) AS rev_sum " +
+                     "FROM orders WHERE order_date >= CURRENT_DATE";
+        try (Connection conn = DatabaseHelper.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return new double[]{ rs.getInt("ord_cnt"), rs.getDouble("rev_sum") };
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching today stats: " + e.getMessage());
+        }
+        return new double[]{ 0, 0 };
+    }
+
+    /**
+     * Lấy dữ liệu doanh thu 7 ngày gần nhất cho biểu đồ.
+     * Trả về List các mảng Object[]: [0] = LocalDate, [1] = double doanh thu.
+     */
+    public List<Object[]> getWeeklySalesChart() {
+        List<Object[]> result = new ArrayList<>();
+        String sql = "SELECT d.dt::date AS sales_date, COALESCE(SUM(o.final_amount), 0) AS total_sales " +
+                     "FROM generate_series(CURRENT_DATE - INTERVAL '6 days', CURRENT_DATE, '1 day'::interval) d(dt) " +
+                     "LEFT JOIN orders o ON o.order_date::date = d.dt::date " +
+                     "GROUP BY d.dt " +
+                     "ORDER BY d.dt ASC";
+        try (Connection conn = DatabaseHelper.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                result.add(new Object[]{
+                    rs.getDate("sales_date").toLocalDate(),
+                    rs.getDouble("total_sales")
+                });
+            }
+        } catch (SQLException e) {
+            System.err.println("Error generating sales chart dataset: " + e.getMessage());
+        }
+        return result;
+    }
+
     // user_id=0 xảy ra khi admin ngoài CSDL (cấu hình db.properties) tạo đơn
     private Order mapOrder(ResultSet rs) throws SQLException {
         Order o = new Order();

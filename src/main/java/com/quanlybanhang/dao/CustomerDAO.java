@@ -131,6 +131,23 @@ public class CustomerDAO {
         }
     }
 
+    /**
+     * Đếm tổng số khách hàng trong hệ thống.
+     */
+    public int getCount() {
+        String sql = "SELECT COUNT(id) AS cust_cnt FROM customers";
+        try (Connection conn = DatabaseHelper.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt("cust_cnt");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error counting customers: " + e.getMessage());
+        }
+        return 0;
+    }
+
     public boolean delete(int id) {
         String sql = "DELETE FROM customers WHERE id = ?";
         try (Connection conn = DatabaseHelper.getConnection();
