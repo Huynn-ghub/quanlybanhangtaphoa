@@ -202,6 +202,23 @@ public class ProductDAO {
         }
     }
 
+    /**
+     * Đếm số sản phẩm đang hoạt động có tồn kho thấp (stock_quantity <= 5).
+     */
+    public int getLowStockCount() {
+        String sql = "SELECT COUNT(id) AS stock_low FROM products WHERE stock_quantity <= 5 AND status = TRUE";
+        try (Connection conn = DatabaseHelper.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt("stock_low");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error counting low stock items: " + e.getMessage());
+        }
+        return 0;
+    }
+
     public boolean delete(int id) {
         String sql = "UPDATE products SET status = FALSE WHERE id = ?";
         try (Connection conn = DatabaseHelper.getConnection();
